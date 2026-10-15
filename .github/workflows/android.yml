@@ -19,8 +19,10 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Usar SDK pré-instalado no runner
-        run: echo "ANDROID_HOME=$ANDROID_HOME" && sdkmanager --version
+      - name: Configurar SDK Android sem pacote obsoleto
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
       - name: Instalar SDK 35
         run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
       - name: Configurar Gradle
