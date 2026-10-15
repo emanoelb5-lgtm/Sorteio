@@ -115,13 +115,13 @@ class MainActivity : Activity() {
 
     private fun buildScreen() {
         val scroller = ScrollView(this).apply {
-            fillViewport = true
+            isFillViewport = true
             clipToPadding = false
             isVerticalScrollBarEnabled = false
-            setBackgroundColor(background)
+            setBackgroundColor(this@MainActivity.background)
         }
         val base = column().apply { setPadding(dp(20), dp(24), dp(20), dp(26)) }
-        scroller.addView(base, ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        scroller.addView(base, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
         setContentView(scroller)
 
         // Cabeçalho
