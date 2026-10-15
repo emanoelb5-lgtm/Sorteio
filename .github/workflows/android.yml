@@ -1,0 +1,46 @@
+name: Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Instalar SDK 35
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+      - name: Compilar APK instalável
+        run: gradle :app:assembleDebug --no-daemon --stacktrace
+      - name: Disponibilizar APK como artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sorteio-Android-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+      - name: Publicar APK em Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk Sorteio-v1.0.0.apk
+          gh release view v1.0.0 >/dev/null 2>&1 && \
+            gh release upload v1.0.0 Sorteio-v1.0.0.apk --clobber || \
+            gh release create v1.0.0 Sorteio-v1.0.0.apk \
+              --title 'Sorteio Android v1.0.0' \
+              --notes 'APK instalável para Android (compilação debug, assinatura de desenvolvimento). Números sem repetição, histórico local e interface premium.'
